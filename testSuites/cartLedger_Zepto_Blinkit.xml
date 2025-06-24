@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Cart Ledger">
+  <test name="Zepto Blinkit Cart Track">
+    <classes>
+      <class name="cartLedgerPages.zeptoLogin"/>
+      <class name="cartLedgerPages.blinkItLogin"/>
+    </classes>
+  </test>
+</suite>

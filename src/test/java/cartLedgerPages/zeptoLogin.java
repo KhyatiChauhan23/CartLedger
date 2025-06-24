@@ -20,7 +20,7 @@ public class zeptoLogin extends baseClass
 	{
 		Properties props = new Properties();
 		props.load(new FileInputStream("config.properties"));
-		String phone = props.getProperty("zepto.phone");
+		String phone = props.getProperty("phone.number");
 		
 		WebDriver driver = baseClass.getDriver();
 		driver.get("https://www.zeptonow.com/");
