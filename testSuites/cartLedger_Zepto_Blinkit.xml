@@ -3,7 +3,7 @@
   <test name="Zepto Blinkit Cart Track">
     <classes>
       <class name="cartLedgerPages.zeptoLogin"/>
-      <class name="cartLedgerPages.blinkItLogin"/>
-    </classes>
+      <class name="cartLedgerPages.orderHistoryPage"/>
+	</classes>
   </test>
 </suite>
