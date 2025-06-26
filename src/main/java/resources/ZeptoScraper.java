@@ -1,20 +1,19 @@
 package resources;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class ZeptoScraper 
 {
 	public static class ZeptoOrder {
         public static String orderId;
-        public LocalDateTime orderDate;
-        public double itemCost;
-        public double itemHandlingCost;
-        public double gst;
-        public double deliveryFee;
-        public double totalBill;
+        public static LocalDate orderDate;
+        public static double itemCost;
+        public static double itemHandlingCost;
+        public static double gst;
+        public static double deliveryFee;
+        public static double totalBill;
 
         public String toString() {
-            return String.format("Order: %s | Date: %s | Item: ₹%.2f | Handling: ₹%.2f | GST: ₹%.2f | Delivery: ₹%.2f | Total: ₹%.2f",
+            return String.format("Order: %s | Date: %s | Item: %.2f | Handling: %.2f | GST: %.2f | Delivery: %.2f | Total: %.2f",
                     orderId, orderDate, itemCost, itemHandlingCost, gst, deliveryFee, totalBill);
         }
     }
