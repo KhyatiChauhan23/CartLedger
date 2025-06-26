@@ -39,8 +39,7 @@ public class orderHistoryPage
 		
 		Thread.sleep(2000);
 		
-//		//Clicking on i icon
-//		driver.findElement(By.xpath("(//img[@class='relative overflow-hidden'])[5]")).click();
+		//Clicking on i icon
 		
 		// Scroll until the i icon is visible and click it
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
