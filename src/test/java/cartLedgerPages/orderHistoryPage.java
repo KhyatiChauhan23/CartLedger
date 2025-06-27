@@ -16,6 +16,8 @@ import resources.ZeptoScraper.ZeptoOrder;
 import org.openqa.selenium.JavascriptExecutor;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.File;
+import java.io.PrintWriter;
 
 public class orderHistoryPage 
 {
@@ -36,41 +38,52 @@ public class orderHistoryPage
 		WebElement profile = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@class='text-sm capitalize']")));
 		profile.click();
 		
-		Thread.sleep(3000);
+		Thread.sleep(2000);
 		
-		WebElement scrollContainer = driver.findElement(By.xpath("//div[contains(@class,'overflow-y-scroll')]"));
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		
-		int index = 1; // Start from 1 because XPath is 1-based
-
-		while (true) {
-		    try {
-		        // Attempt to fetch the current indexed order card
+		int index = 1;
+		while (true) 
+		{
+		    try 
+		    {
+		        // Fetching the current indexed order card
 		        String xpath = "(//div[@class='px-4'])[" + index + "]";
 		        WebElement orderCard = driver.findElement(By.xpath(xpath));
 
 		        js.executeScript("arguments[0].scrollIntoView({block: 'center'});", orderCard);
 		        orderCard.click();
-		        Thread.sleep(2000);
+		        Thread.sleep(1000);
 		        
 		     // Check if the order is cancelled
-		        try {
+		       try 
+		       {
 		            WebElement cancelledTag = driver.findElement(By.xpath("//p[@class='text-heading3' and text()='Cancelled']"));
-		            if (cancelledTag.isDisplayed()) {
-		                System.out.println("Order at index " + index + " is cancelled. Skipping.");
+		            if (cancelledTag.isDisplayed()) 
+		            {
+//		                System.out.println("Order at index " + index + " is cancelled. Skipping.");
 		                driver.navigate().back();
 		                Thread.sleep(1500);
 		                driver.navigate().refresh();
 		                Thread.sleep(2000);
-		                index++; // Move to next order
-		                continue; // Skip current loop iteration
+		                index++;
+		                continue;
 		            }
-		        } catch (Exception e) {
-		            // Not cancelled; continue normally
+		        } 
+		        catch (Exception e) 
+		        {
+		            // Not cancelled --> continue normally
 		        }
 
-
 		        ZeptoOrder orderDetails = fetchOrderDetails();
+		        LocalDate firstOfThisMonth = LocalDate.now().withDayOfMonth(1);
+
+		        if (orderDetails.orderDate != null && orderDetails.orderDate.isBefore(firstOfThisMonth)) 
+		        {
+		            System.out.println("Encountered order from before this month. Stopping.");
+		            break;
+		        }
+
 		        allOrders.add(orderDetails);
 		        
 		        driver.navigate().back();
@@ -80,31 +93,43 @@ public class orderHistoryPage
 
 		        index++; // Move to next order
 
-		    } catch (org.openqa.selenium.NoSuchElementException e) {
+		    } 
+		    catch (org.openqa.selenium.NoSuchElementException e) 
+		    {
 		        // Check if "Load More" is available
-		    	try {
+		    	try 
+		    	{
 		    	    WebElement scrollerr = driver.findElement(By.xpath("//div[contains(@class,'overflow-y-scroll')]"));
+		    	    Thread.sleep(2000);
 		    	    WebElement loadMore = driver.findElement(By.xpath("//p[contains(text(),'Load More')]"));
 
-		    	    if (loadMore.isDisplayed()) {
+		    	    if (loadMore.isDisplayed()) 
+		    	    {
 		    	        js.executeScript("arguments[0].scrollTop = arguments[0].scrollHeight", scrollerr);
 		    	        Thread.sleep(1000);
-		    	        try {
+		    	        try 
+		    	        {
 		    	            loadMore.click(); // normal click
-		    	        } catch (Exception clickErr) {
+		    	        } catch (Exception clickErr) 
+		    	        {
 		    	            js.executeScript("arguments[0].click();", loadMore); // fallback JS click
 		    	        }
 		    	        Thread.sleep(2000);
 		    	        continue; // Retry the same index
 		    	    }
-		    	} catch (Exception nested) {
+		    	} 
+		    	catch (Exception nested) 
+		    	{
 		    	    System.out.println("No 'Load More' found or not clickable.");
+		    	    break;
 		    	}
-		    }}
-
+		    }
+		}
+		    exportToCSV(allOrders, "zepto_orders.csv");    
 	}
-
-    private ZeptoOrder fetchOrderDetails() throws InterruptedException {
+	
+    private ZeptoOrder fetchOrderDetails() throws InterruptedException 
+    {
         ZeptoOrder order = new ZeptoOrder();
         
 		//Clicking on i icon
@@ -118,93 +143,108 @@ public class orderHistoryPage
 		int attempt = 0;
 		boolean elementFound = false;
 
-		while (attempt < maxScrollAttempts) {
-		    try {
+		while (attempt < maxScrollAttempts) 
+		{
+		    try 
+		    {
 		        WebElement iIcon = driver.findElement(iIconLocator);
-		        if (iIcon.isDisplayed()) {
+		        if (iIcon.isDisplayed()) 
+		        {
 		            iIcon.click();
 		            elementFound = true;
 		            break;
 		        }
-		    } catch (Exception e) {
+		    } 
+		    catch (Exception e) 
+		    {
 		        // Element not visible yet
 		    }
 
 		    jse.executeScript("arguments[0].scrollBy(0, 300);", scrollContainer);
-		    Thread.sleep(500);
+		    Thread.sleep(1000);
 		    attempt++;
 		}
 
-		if (!elementFound) {
+		if (!elementFound) 
+		{
 		    throw new RuntimeException("i icon not found after scrolling.");
 		}
 
-		try {
+		try 
+		{
 		//Fetching Item Cost
 		WebElement costOfItem = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//span[@class='text-heading8 truncate text-left'])[3]")));
 		String itemCostText = costOfItem.getText();
 		String cleanValue1 = itemCostText.replaceAll("[^\\d.]", "");
-		ZeptoOrder.itemCost = Double.parseDouble(cleanValue1);
-		System.out.println(ZeptoOrder.itemCost);
-	    } catch (Exception e) {
-	        System.out.println("Item cost not found. Defaulting to 0.");
+		order.itemCost = Double.parseDouble(cleanValue1);
+	    } 
+		catch (Exception e) 
+		{
 	        order.itemCost = 0.0;
 	    }
 		
-		try {
+		try 
+		{
 		//Fetching Item Handling Cost
 		WebElement itemHandleCost = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//span[@class='text-body4 truncate text-left'])[1]")));
 		String costText = itemHandleCost.getText();
 		String cleanValue2 = costText.replaceAll("[^\\d.]", "");
-		ZeptoOrder.itemHandlingCost = Double.parseDouble(cleanValue2);
-		System.out.println(ZeptoOrder.itemHandlingCost);
-		} catch (Exception e) {
-	        System.out.println("Item Handling Cost not found. Defaulting to 0.");
+		order.itemHandlingCost = Double.parseDouble(cleanValue2);
+		} 
+		catch (Exception e) 
+		{
 	        order.itemHandlingCost = 0.0;
 	    }
 		
-		try {
+		try 
+		{
 		//Fetching GST
 		WebElement gstOnCost = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//span[@class='text-body4 truncate text-left'])[2]")));
 		String gstText = gstOnCost.getText();
 		String cleanValue3 = gstText.replaceAll("[^\\d.]", "");
-		ZeptoOrder.gst = Double.parseDouble(cleanValue3);
-		System.out.println(ZeptoOrder.gst);
-		} catch (Exception e) {
-	        System.out.println("GST not found. Defaulting to 0.");
+		order.gst = Double.parseDouble(cleanValue3);
+		} 
+		catch (Exception e) 
+		{
 	        order.gst = 0.0;
 	    }
 		
 		JavascriptExecutor popUpClose = (JavascriptExecutor) driver;
 		popUpClose.executeScript("document.querySelector('div.bg-skin-inverted').remove();");
-
-		Thread.sleep(2000);
 		
-		try {
+		try 
+		{
 	        WebElement scroll = driver.findElement(By.xpath("//div[@class='hidden flex-col lg:block lg:h-[80vh] lg:w-2/3 lg:overflow-y-scroll lg:rounded-r-3xl lg:border-l']"));
 	        JavascriptExecutor js = (JavascriptExecutor) driver;
 
 	        int scrollAttempts = 0;
 	        int maxScrolls = 20;
 
-	        while (scrollAttempts < maxScrolls) {
+	        while (scrollAttempts < maxScrolls) 
+	        {
 	            boolean allFound = true;
 
-	            try {
+	            try 
+	            {
 	                driver.findElement(By.xpath("(//span[@class='text-heading8 truncate text-left'])[1]")); // Total Bill
-	            } catch (Exception e) {
+	            } catch (Exception e) 
+	            {
 	                allFound = false;
 	            }
 
-	            try {
+	            try 
+	            {
 	                driver.findElement(By.xpath("(//span[@class='text-heading8 truncate text-left'])[2]")); // Delivery Fee
-	            } catch (Exception e) {
+	            } catch (Exception e) 
+	            {
 	                allFound = false;
 	            }
 
-	            try {
+	            try 
+	            {
 	                driver.findElement(By.xpath("(//p[@class='text-body4 leading-3'])[1]")); // Order ID
-	            } catch (Exception e) {
+	            } catch (Exception e) 
+	            {
 	                allFound = false;
 	            }
 
@@ -215,57 +255,60 @@ public class orderHistoryPage
 	            scrollAttempts++;
 	        }
 
-	        if (scrollAttempts == maxScrolls) {
+	        if (scrollAttempts == maxScrolls) 
+	        {
 	            System.out.println("Warning: Some elements might not have loaded after scrolling.");
 	        }
-	    } catch (Exception e) {
+	    } 
+		catch (Exception e) 
+		{
 	        System.out.println("Error while scrolling for final details.");
 	        e.printStackTrace();
 	    }
 		
-		try {
+		try 
+		{
 		//Total Bill
-		WebElement total = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//span[@class='text-heading8 truncate text-left'])[1]")));
+			Thread.sleep(1000);
+		WebElement total = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@class='text-cta1 truncate text-left']")));
 		String billText = total.getText();
 		String cleanValue5 = billText.replaceAll("[^\\d.]", "");
-		ZeptoOrder.totalBill = Double.parseDouble(cleanValue5);
-		System.out.println(ZeptoOrder.totalBill);
+		order.totalBill = Double.parseDouble(cleanValue5);
 		}
-		catch (Exception e) {
-	        System.out.println("Total Bill not found. Defaulting to 0.");
+		catch (Exception e) 
+		{
 	        order.totalBill = 0.0;
 	    }
 		
-		try {
+		try 
+		{
 		//Fetching Delivery Fee
 		WebElement delivery = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//span[@class='text-heading8 truncate text-left'])[2]")));
 		String deliveryText = delivery.getText();
 		String cleanValue4 = deliveryText.replaceAll("[^\\d.]", "");
-		ZeptoOrder.deliveryFee = Double.parseDouble(cleanValue4);
-		System.out.println(ZeptoOrder.deliveryFee);
+		order.deliveryFee = Double.parseDouble(cleanValue4);
 		}
-		catch (Exception e) {
-	        System.out.println("Delivery Fee not found. Defaulting to 0.");
+		catch (Exception e) 
+		{
 	        order.deliveryFee = 0.0;
 	    }
 		
-		try {
+		try 
+		{
 		//Processing Fees
-		WebElement processingFees = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//span[@class='text-heading8 truncate text-left'])[1]")));
+		WebElement processingFees = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("(//span[@class='text-heading8 truncate text-left'])[3]")));
 		String processingText = processingFees.getText();
 		String cleanValue5 = processingText.replaceAll("[^\\d.]", "");
-		ZeptoOrder.processingFee = Double.parseDouble(cleanValue5);
-		System.out.println(ZeptoOrder.processingFee);
+		order.processingFee = Double.parseDouble(cleanValue5);
 		}
-		catch (Exception e) {
-	        System.out.println("Processing fee not found. Defaulting to 0.");
-	        order.totalBill = 0.0;
+		catch (Exception e)
+		{
+	        order.processingFee = 0.0;
 	    }
 		
 		//Fetching Order ID
 		WebElement target = driver.findElement(By.xpath("(//p[@class='text-body4 leading-3'])[1]"));
-		ZeptoOrder.orderId = target.getText();
-		System.out.println(ZeptoOrder.orderId);
+		order.orderId = target.getText();
 		
 		//Fetching OrderDate
 		WebElement orderPlacedElement = driver.findElement(By.xpath("(//p[@class='text-body4 leading-3'])[3]"));
@@ -283,16 +326,45 @@ public class orderHistoryPage
 		    .appendPattern("d MMM yyyy, hh:mm a")
 		    .toFormatter(Locale.ENGLISH);
 
-		try {
+		try 
+		{
 		    LocalDateTime dateTime = LocalDateTime.parse(cleanedDate, formatter);
 		    LocalDate date = dateTime.toLocalDate();
-		    System.out.println("Parsed: " + date);
-		    ZeptoOrder.orderDate = date;
-		} catch (Exception e) {
+		    order.orderDate = date;
+		} 
+		catch (Exception e) 
+		{
 		    System.err.println("Failed to parse: [" + cleanedDate + "]");
 		    e.printStackTrace();
 		}
 		return order;
     }
-}
+    
+    private void exportToCSV(List<ZeptoOrder> orders, String filePath) 
+    {
+        try (PrintWriter writer = new PrintWriter(new File(filePath))) 
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Order ID,Order Date,Item Cost,Handling Cost,GST,Delivery Fee,Processing Fee,Total Bill\n");
 
+            for (ZeptoOrder order : orders) {
+                sb.append(order.orderId).append(",");
+                sb.append(order.orderDate).append(",");
+                sb.append(order.itemCost).append(",");
+                sb.append(order.itemHandlingCost).append(",");
+                sb.append(order.gst).append(",");
+                sb.append(order.deliveryFee).append(",");
+                sb.append(order.processingFee).append(",");
+                sb.append(order.totalBill).append("\n");
+            }
+
+            writer.write(sb.toString());
+            System.out.println("CSV file written to " + filePath);
+            System.out.println("**Execution Ends**");
+        } 
+        catch (Exception e) 
+        {
+            e.printStackTrace();
+        }
+    }
+}	
