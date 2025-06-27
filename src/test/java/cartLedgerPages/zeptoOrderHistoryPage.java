@@ -19,7 +19,7 @@ import java.util.List;
 import java.io.File;
 import java.io.PrintWriter;
 
-public class orderHistoryPage 
+public class zeptoOrderHistoryPage 
 {
 	WebDriver driver;
 	WebDriverWait wait;

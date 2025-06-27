@@ -14,21 +14,24 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class blinkItLogin
+//public class blinkItLogin
+public class blinkItLogin extends baseClass
 {
-	WebDriver driver;
-	WebDriverWait wait;
-	
-	@BeforeClass
-	public void setup()
-	{
-		driver = baseClass.getDriver();
-		wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-	}
+//	WebDriver driver;
+//	WebDriverWait wait;
+//	
+//	@BeforeClass
+//	public void setup()
+//	{
+//		driver = baseClass.getDriver();
+//		wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+//	}
 	
 	@Test
-	public void blinkItLogin() throws FileNotFoundException, IOException
-	{		
+	public void blinkItLogin() throws FileNotFoundException, IOException, InterruptedException 
+	{	 
+		WebDriver driver = baseClass.getDriver(); //Remove this later
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5)); //Remove this later
 		driver.get("https://blinkit.com/");
 		
 		try
@@ -63,5 +66,6 @@ public class blinkItLogin
 		{
 			otpInput.get(i).sendKeys(String.valueOf(otp.charAt(i)));
 		}
+		Thread.sleep(3000);
 	}
 }
