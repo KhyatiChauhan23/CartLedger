@@ -2,8 +2,10 @@
 <suite name="Cart Ledger">
   <test name="Zepto Blinkit Cart Track">
     <classes>
-      <class name="cartLedgerPages.blinkItLogin"/>
-      <class name="cartLedgerPages.blinkItOrderHistoryPage"/>
+		<class name="cartLedgerPages.zeptoLogin"/>
+		<class name="cartLedgerPages.zeptoOrderHistoryPage"/>
+     	<class name="cartLedgerPages.blinkItLogin"/>
+     	<class name="cartLedgerPages.blinkItOrderHistoryPage"/>
 	</classes>
   </test>
 </suite>

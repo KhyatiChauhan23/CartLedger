@@ -16,8 +16,7 @@ import resources.ZeptoScraper.ZeptoOrder;
 import org.openqa.selenium.JavascriptExecutor;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.File;
-import java.io.PrintWriter;
+import utilities.writeToCsv;
 
 public class zeptoOrderHistoryPage 
 {
@@ -41,6 +40,7 @@ public class zeptoOrderHistoryPage
 		Thread.sleep(2000);
 		
 		JavascriptExecutor js = (JavascriptExecutor) driver;
+		writeToCsv csv = new writeToCsv();
 		
 		int index = 1;
 		while (true) 
@@ -125,7 +125,7 @@ public class zeptoOrderHistoryPage
 		    	}
 		    }
 		}
-		    exportToCSV(allOrders, "zepto_orders.csv");    
+		    csv.zeptoExportToCSV(allOrders, "zepto_orders.csv");    
 	}
 	
     private ZeptoOrder fetchOrderDetails() throws InterruptedException 
@@ -135,7 +135,7 @@ public class zeptoOrderHistoryPage
 		//Clicking on i icon
 		// Scroll until the i icon is visible and click it
 		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		By iIconLocator = By.xpath("(//img[@class='relative overflow-hidden'])[5]");
+		By iIconLocator = By.xpath("//img[contains(@class, 'relative') and contains(@src, 'promo-cash-cart-info-icon.png')]");
 		// Scroll container div
 		WebElement scrollContainer = driver.findElement(By.xpath("//div[contains(@class,'overflow-y-scroll')]"));
 
@@ -338,33 +338,5 @@ public class zeptoOrderHistoryPage
 		    e.printStackTrace();
 		}
 		return order;
-    }
-    
-    private void exportToCSV(List<ZeptoOrder> orders, String filePath) 
-    {
-        try (PrintWriter writer = new PrintWriter(new File(filePath))) 
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Order ID,Order Date,Item Cost,Handling Cost,GST,Delivery Fee,Processing Fee,Total Bill\n");
-
-            for (ZeptoOrder order : orders) {
-                sb.append(order.orderId).append(",");
-                sb.append(order.orderDate).append(",");
-                sb.append(order.itemCost).append(",");
-                sb.append(order.itemHandlingCost).append(",");
-                sb.append(order.gst).append(",");
-                sb.append(order.deliveryFee).append(",");
-                sb.append(order.processingFee).append(",");
-                sb.append(order.totalBill).append("\n");
-            }
-
-            writer.write(sb.toString());
-            System.out.println("CSV file written to " + filePath);
-            System.out.println("**Execution Ends**");
-        } 
-        catch (Exception e) 
-        {
-            e.printStackTrace();
-        }
     }
 }	

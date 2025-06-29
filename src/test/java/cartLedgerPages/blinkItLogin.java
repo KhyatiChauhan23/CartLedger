@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Properties;
-import java.util.Scanner;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,24 +13,21 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-//public class blinkItLogin
-public class blinkItLogin extends baseClass
+public class blinkItLogin
 {
-//	WebDriver driver;
-//	WebDriverWait wait;
-//	
-//	@BeforeClass
-//	public void setup()
-//	{
-//		driver = baseClass.getDriver();
-//		wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-//	}
+	WebDriver driver;
+	WebDriverWait wait;
+	
+	@BeforeClass
+	public void setup()
+	{
+		driver = baseClass.getDriver();
+		wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+	}
 	
 	@Test
-	public void blinkItLogin() throws FileNotFoundException, IOException, InterruptedException 
+	public void blinkItLoginPage() throws FileNotFoundException, IOException, InterruptedException 
 	{	 
-		WebDriver driver = baseClass.getDriver(); //Remove this later
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5)); //Remove this later
 		driver.get("https://blinkit.com/");
 		
 		try
@@ -56,16 +52,14 @@ public class blinkItLogin extends baseClass
 		phoneNumber.sendKeys(phone);
 		
 		driver.findElement(By.xpath("//button[normalize-space()='Continue']")).click();
-		
-		System.out.println("Enter the OTP recieved on your phone: ");
-		Scanner sc = new Scanner(System.in);
-		String otp = sc.nextLine();
-		
+
+		String otp = utilities.OTPReader.getOTP("Blinkit");
 		List<WebElement> otpInput = driver.findElements(By.xpath("(//input[@type='tel'])"));
-		for(int i=0; i<otp.length();i++)
-		{
-			otpInput.get(i).sendKeys(String.valueOf(otp.charAt(i)));
+
+		for (int i = 0; i < otp.length() && i < otpInput.size(); i++) {
+		    otpInput.get(i).sendKeys(String.valueOf(otp.charAt(i)));
 		}
-		Thread.sleep(3000);
+		Thread.sleep(3000); // Wait for any post-OTP processing
+		}
 	}
-}
+

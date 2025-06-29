@@ -6,7 +6,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
-import java.util.Scanner;
 import java.util.List;
 import java.util.Properties;
 import java.io.FileInputStream;
@@ -35,9 +34,7 @@ public class zeptoLogin extends baseClass
 		WebElement getOtp = driver.findElement(By.xpath("//div[normalize-space()='Continue']"));
 		getOtp.click();
 		
-		System.out.print("Enter the OTP recieved on your phone: ");
-		Scanner sc = new Scanner(System.in);
-		String otp = sc.nextLine();
+		String otp = utilities.OTPReader.getOTP("Zepto");
 		
 		System.out.println();
     	System.out.println("**Execution Starts**");
