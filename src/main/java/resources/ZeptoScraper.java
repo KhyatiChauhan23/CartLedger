@@ -1,7 +1,7 @@
 package resources;
 import java.time.LocalDate;
 
-public class ZeptoScraper {
+public class zeptoScraper {
     public static class ZeptoOrder {
         public String orderId;
         public LocalDate orderDate;

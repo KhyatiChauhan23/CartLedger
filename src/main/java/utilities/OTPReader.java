@@ -1,7 +1,7 @@
 package utilities;
 import java.util.Scanner;
 
-public class OTPReader {
+public class otpReader {
     private static String otp = null;
 
     public static String getOTP(String platform) {

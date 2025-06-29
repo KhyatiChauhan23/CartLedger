@@ -3,19 +3,19 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import resources.BlinkItScraper;
-import resources.ZeptoScraper.ZeptoOrder;
+import resources.blinkItScraper;
+import resources.zeptoScraper.ZeptoOrder;
 
 public class writeToCsv {
 	
-	public void blinkItExportToCSV(List<BlinkItScraper> orders, String filePath) {
+	public void blinkItExportToCSV(List<blinkItScraper> orders, String filePath) {
 	    try (PrintWriter writer = new PrintWriter(new File(filePath))) {
 	        StringBuilder sb = new StringBuilder();
 	        sb.append("Order ID,Order Date,Item Cost,Handling Charge,Delivery Charge,Total Bill\n"); // ✅ Removed GST
 
 	        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-	        for (BlinkItScraper order : orders) {
+	        for (blinkItScraper order : orders) {
 	            sb.append(order.orderID).append(",");
 	            sb.append(order.orderDate != null ? order.orderDate.format(dateFormatter) : "").append(",");
 	            sb.append(order.itemCost).append(",");

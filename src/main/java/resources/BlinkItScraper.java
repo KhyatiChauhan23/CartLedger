@@ -2,7 +2,7 @@ package resources;
 
 import java.time.LocalDate;
 
-public class BlinkItScraper
+public class blinkItScraper
 {
 	public String orderID;
 	public LocalDate orderDate;

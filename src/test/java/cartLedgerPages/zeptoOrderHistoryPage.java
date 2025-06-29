@@ -12,7 +12,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import resources.ZeptoScraper.ZeptoOrder;
+import resources.zeptoScraper.ZeptoOrder;
 import org.openqa.selenium.JavascriptExecutor;
 import java.util.ArrayList;
 import java.util.List;

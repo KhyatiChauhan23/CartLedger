@@ -34,7 +34,7 @@ public class zeptoLogin extends baseClass
 		WebElement getOtp = driver.findElement(By.xpath("//div[normalize-space()='Continue']"));
 		getOtp.click();
 		
-		String otp = utilities.OTPReader.getOTP("Zepto");
+		String otp = utilities.otpReader.getOTP("Zepto");
 		
 		System.out.println();
     	System.out.println("**Execution Starts**");

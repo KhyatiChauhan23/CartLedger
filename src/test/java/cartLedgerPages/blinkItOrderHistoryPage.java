@@ -2,7 +2,7 @@ package cartLedgerPages;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import resources.BlinkItScraper;
+import resources.blinkItScraper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -22,7 +22,7 @@ public class blinkItOrderHistoryPage
 	
 	WebDriver driver;
 	WebDriverWait wait;
-	List<BlinkItScraper> orders = new ArrayList<>();
+	List<blinkItScraper> orders = new ArrayList<>();
 	JavascriptExecutor js = (JavascriptExecutor) driver;
 	
 	@BeforeClass
@@ -54,7 +54,7 @@ public class blinkItOrderHistoryPage
 			orderCard.click(); 		
 			Thread.sleep(2000);
 			
-			BlinkItScraper orderDetails = fetchOrderDetails();
+			blinkItScraper orderDetails = fetchOrderDetails();
 	        LocalDate firstOfThisMonth = LocalDate.now().withDayOfMonth(1);
 
 	        if (orderDetails.orderDate != null && orderDetails.orderDate.isBefore(firstOfThisMonth)) 
@@ -78,9 +78,9 @@ public class blinkItOrderHistoryPage
 		csv.blinkItExportToCSV(orders, "blinkIt_orders.csv"); 
 	}
 		
-	public BlinkItScraper fetchOrderDetails()
+	public blinkItScraper fetchOrderDetails()
 		{
-			BlinkItScraper order = new BlinkItScraper();
+			blinkItScraper order = new blinkItScraper();
 			
 			//Fetching OrderId
 			By orderId = By.xpath("//div[@data-pf='reset' and contains(text(), 'ORD')]");
