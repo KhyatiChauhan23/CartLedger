@@ -59,7 +59,6 @@ public class blinkItOrderHistoryPage
 
 	        if (orderDetails.orderDate != null && orderDetails.orderDate.isBefore(firstOfThisMonth)) 
 	        {
-	            System.out.println("Encountered order from before this month. Stopping.");
 	            break;
 	        }
 			orders.add(orderDetails);

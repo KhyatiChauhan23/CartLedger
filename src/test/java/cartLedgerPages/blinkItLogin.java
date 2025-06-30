@@ -53,7 +53,7 @@ public class blinkItLogin
 		
 		driver.findElement(By.xpath("//button[normalize-space()='Continue']")).click();
 
-		String otp = utilities.otpReader.getOTP("Blinkit");
+		String otp = utilities.OTPReader.getOTP("Blinkit");
 		List<WebElement> otpInput = driver.findElements(By.xpath("(//input[@type='tel'])"));
 
 		for (int i = 0; i < otp.length() && i < otpInput.size(); i++) {

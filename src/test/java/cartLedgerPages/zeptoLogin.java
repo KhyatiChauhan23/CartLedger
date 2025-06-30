@@ -34,10 +34,10 @@ public class zeptoLogin extends baseClass
 		WebElement getOtp = driver.findElement(By.xpath("//div[normalize-space()='Continue']"));
 		getOtp.click();
 		
-		String otp = utilities.otpReader.getOTP("Zepto");
+		String otp = utilities.OTPReader.getOTP("Zepto");
 		
 		System.out.println();
-    	System.out.println("**Execution Starts**");
+    	System.out.println("Extracting Zepto & BlinkIt Orders\n");
 		
 		List<WebElement> otpInput = driver.findElements(By.cssSelector("input[type='text']"));
 		for(int i=0; i<otp.length(); i++)

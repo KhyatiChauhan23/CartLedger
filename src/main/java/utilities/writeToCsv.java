@@ -3,6 +3,8 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import io.opentelemetry.exporter.logging.SystemOutLogRecordExporter;
 import resources.blinkItScraper;
 import resources.zeptoScraper.ZeptoOrder;
 
@@ -25,8 +27,8 @@ public class writeToCsv {
 	        }
 
 	        writer.write(sb.toString());
-	        System.out.println("CSV file written to " + filePath);
-	        System.out.println("**Execution Ends**");
+	        System.out.println("\nCSV file written to " + filePath);
+	        System.out.println("\nZepto & BlinkIt Orders Extracted & CSV files Generated");
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
@@ -52,8 +54,7 @@ public class writeToCsv {
             }
 
             writer.write(sb.toString());
-            System.out.println("CSV file written to " + filePath);
-            System.out.println("**Execution Ends**");
+	        System.out.println("CSV file written to " + filePath);
         } 
         catch (Exception e) 
         {
