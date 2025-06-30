@@ -11,6 +11,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import resources.zeptoScraper.ZeptoOrder;
 import org.openqa.selenium.JavascriptExecutor;
@@ -32,7 +33,8 @@ public class zeptoOrderHistoryPage
 	}
 	
 	@Test
-	public void orderHistory() throws InterruptedException
+	@Parameters({"inputMonth", "inputYear"})
+	public void orderHistory(String monthParam, String yearParam) throws InterruptedException
 	{
 		WebElement profile = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@class='text-sm capitalize']")));
 		profile.click();
@@ -41,6 +43,12 @@ public class zeptoOrderHistoryPage
 		
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		writeToCsv csv = new writeToCsv();
+		
+	    int inputMonth = Integer.parseInt(monthParam);
+	    int inputYear = Integer.parseInt(yearParam);
+
+		LocalDate selectedMonthStart = LocalDate.of(inputYear, inputMonth, 1);
+		LocalDate selectedMonthEnd = selectedMonthStart.withDayOfMonth(selectedMonthStart.lengthOfMonth());
 		
 		int index = 1;
 		while (true) 
@@ -76,14 +84,26 @@ public class zeptoOrderHistoryPage
 		        }
 
 		        ZeptoOrder orderDetails = fetchOrderDetails();
-		        LocalDate firstOfThisMonth = LocalDate.now().withDayOfMonth(1);
 
-		        if (orderDetails.orderDate != null && orderDetails.orderDate.isBefore(firstOfThisMonth)) 
+		        if (orderDetails.orderDate == null) 
 		        {
-		            break;
+		            driver.navigate().back();
+		            Thread.sleep(1500);
+		            driver.navigate().refresh();
+		            Thread.sleep(2000);
+		            index++;
+		            continue;
 		        }
 
-		        allOrders.add(orderDetails);
+		        if (orderDetails.orderDate.isBefore(selectedMonthStart)) 
+		        {
+		            break; // Orders are listed newest to oldest, so we can stop
+		        }
+
+		        if (!orderDetails.orderDate.isAfter(selectedMonthEnd)) 
+		        {
+		            allOrders.add(orderDetails);
+		        }
 		        
 		        driver.navigate().back();
 		        Thread.sleep(1500);

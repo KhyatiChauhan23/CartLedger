@@ -1,6 +1,8 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
 <suite name="Cart Ledger">
   <test name="Zepto Blinkit Cart Track">
+	<parameter name="inputMonth" value="5"/>
+    <parameter name="inputYear" value="2025"/>
     <classes>
 		<class name="cartLedgerPages.zeptoLogin"/>
 		<class name="cartLedgerPages.zeptoOrderHistoryPage"/>

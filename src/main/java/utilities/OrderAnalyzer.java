@@ -11,8 +11,10 @@ public class OrderAnalyzer {
         double blinkitTotal = 0, blinkitDeliveryTotal = 0;
 
         // Analyze Zepto Orders
-        for (ZeptoOrder order : zeptoOrders) {
-            if (YearMonth.from(order.getOrderDate()).equals(month)) {
+        for (ZeptoOrder order : zeptoOrders) 
+        {
+            if (YearMonth.from(order.getOrderDate()).equals(month)) 
+            {
                 zeptoTotal += order.getTotalBill();
                 zeptoDeliveryTotal += order.getGst() + order.getItemHandlingCost()+ order.getDeliveryFee() + order.getProcessingFee();
             }

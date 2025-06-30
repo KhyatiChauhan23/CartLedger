@@ -9,10 +9,12 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
 import utilities.scroller;
 import org.openqa.selenium.JavascriptExecutor;
 import utilities.writeToCsv;
@@ -33,7 +35,8 @@ public class blinkItOrderHistoryPage
 	}
 	
 	@Test
-	public void blinkItOrderHistory() 
+	@Parameters({"inputMonth", "inputYear"})
+	public void blinkItOrderHistory(String monthParam, String yearParam) 
 	{
 		WebElement account = driver.findElement(By.xpath("//div[@class='ProfileButton__Text-sc-975teb-2 bFHCDW']"));
 		account.click();
@@ -42,6 +45,12 @@ public class blinkItOrderHistoryPage
 		myOrders.click();
 		
 		writeToCsv csv = new writeToCsv();
+		
+		int inputMonth = Integer.parseInt(monthParam);
+	    int inputYear = Integer.parseInt(yearParam);
+
+		LocalDate selectedMonthStart = LocalDate.of(inputYear, inputMonth, 1);
+		LocalDate selectedMonthEnd = selectedMonthStart.withDayOfMonth(selectedMonthStart.lengthOfMonth());
 		
 		int index=1;
 		
@@ -55,13 +64,28 @@ public class blinkItOrderHistoryPage
 			Thread.sleep(2000);
 			
 			blinkItScraper orderDetails = fetchOrderDetails();
-	        LocalDate firstOfThisMonth = LocalDate.now().withDayOfMonth(1);
-
-	        if (orderDetails.orderDate != null && orderDetails.orderDate.isBefore(firstOfThisMonth)) 
+			
+			if (orderDetails.orderDate == null) 
 	        {
-	            break;
+	            driver.navigate().back();
+	            Thread.sleep(1500);
+	            driver.navigate().refresh();
+	            Thread.sleep(2000);
+	            index++;
+	            continue;
 	        }
-			orders.add(orderDetails);
+
+	        if (orderDetails.orderDate.isBefore(selectedMonthStart)) 
+	        {
+	            break; // Orders are listed newest to oldest, so we can stop
+	        }
+
+	        if (!orderDetails.orderDate.isAfter(selectedMonthEnd)) 
+	        {
+	            orders.add(orderDetails);
+	        }
+	        
+			
 			index++;
 			
 			driver.navigate().back();
@@ -74,7 +98,7 @@ public class blinkItOrderHistoryPage
 			break;
 		};
 		}
-		csv.blinkItExportToCSV(orders, "src/test/java/csvFiles/blinkIt_orders.csv"); 
+		csv.blinkItExportToCSV(orders, "src/test/java/csvFiles/blinkIt_orders.csv");
 	}
 		
 	public blinkItScraper fetchOrderDetails()
