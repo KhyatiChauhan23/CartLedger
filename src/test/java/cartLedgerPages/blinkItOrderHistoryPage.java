@@ -75,7 +75,7 @@ public class blinkItOrderHistoryPage
 			break;
 		};
 		}
-		csv.blinkItExportToCSV(orders, "blinkIt_orders.csv"); 
+		csv.blinkItExportToCSV(orders, "src/test/java/csvFiles/blinkIt_orders.csv"); 
 	}
 		
 	public blinkItScraper fetchOrderDetails()

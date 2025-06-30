@@ -125,7 +125,7 @@ public class zeptoOrderHistoryPage
 		    	}
 		    }
 		}
-		    csv.zeptoExportToCSV(allOrders, "zepto_orders.csv");    
+		    csv.zeptoExportToCSV(allOrders, "src/test/java/csvFiles/zepto_orders.csv");    
 	}
 	
     private ZeptoOrder fetchOrderDetails() throws InterruptedException 
